@@ -1,7 +1,14 @@
 import { useNavigation } from "@react-navigation/core";
-import { Button, Text, TextInput, View, TouchableOpacity } from "react-native";
+import {
+  Button,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
@@ -10,6 +17,7 @@ export default function SignInScreen({ setToken }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPassword, setErrorPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSignIn = async () => {
     if (email === "" || password === "") {
@@ -44,7 +52,14 @@ export default function SignInScreen({ setToken }) {
     }
   };
 
-  return (
+  useEffect(() => {
+    handleSignIn();
+    setIsLoading(false);
+  }, []);
+
+  return isLoading ? (
+    <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
+  ) : (
     <View>
       <View>
         <Text>Name: </Text>
