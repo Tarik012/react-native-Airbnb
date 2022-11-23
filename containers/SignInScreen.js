@@ -48,7 +48,7 @@ export default function SignInScreen({ setToken }) {
         alert("Connexion réussie");
       }
     } catch (error) {
-      console.log(error.response);
+      console.log(error.response.data);
     }
   };
 

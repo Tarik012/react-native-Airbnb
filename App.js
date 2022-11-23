@@ -18,6 +18,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
 
+  // cette fonction sert a la création de compte et à la deconnexion, c'est l'équivalent de cookies
   const setToken = async (token) => {
     if (token) {
       await AsyncStorage.setItem("userToken", token);
@@ -30,7 +31,7 @@ export default function App() {
 
   useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
-    const bootstrapAsync = async () => {
+    const checkIfTokenExists = async () => {
       // We should also handle error for production apps
       const userToken = await AsyncStorage.getItem("userToken");
 
@@ -41,7 +42,7 @@ export default function App() {
       setIsLoading(false);
     };
 
-    bootstrapAsync();
+    checkIfTokenExists();
   }, []);
 
   if (isLoading === true) {
@@ -55,11 +56,11 @@ export default function App() {
         {userToken === null ? (
           // No token found, user isn't signed in
           <>
-            <Stack.Screen name="SignIn">
-              {() => <SignInScreen setToken={setToken} />}
-            </Stack.Screen>
             <Stack.Screen name="SignUp">
               {() => <SignUpScreen setToken={setToken} />}
+            </Stack.Screen>
+            <Stack.Screen name="SignIn">
+              {() => <SignInScreen setToken={setToken} />}
             </Stack.Screen>
           </>
         ) : (
