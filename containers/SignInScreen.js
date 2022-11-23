@@ -4,9 +4,13 @@ import {
   Text,
   TextInput,
   View,
+  Image,
   TouchableOpacity,
   ActivityIndicator,
+  StyleSheet,
+  ScrollView,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -14,19 +18,15 @@ export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errorEmail, setErrorEmail] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignIn = async () => {
-    if (email === "" || password === "") {
-      setErrorMessage("Veuillez renseigner tous les champs.");
-      //alert("Veuillez renseigner tous les champs.");
-    } else if (email.length < 1) {
-      setErrorEmail("au moins un caractère !");
-    } else if (!password.includes("@")) {
-      setErrorPassword("format incorrect !");
+    setError("");
+
+    if (!email || !password) {
+      setError("Veuillez renseigner tous les champs.");
+      return;
     }
 
     try {
@@ -41,60 +41,79 @@ export default function SignInScreen({ setToken }) {
 
       if (res.data.token) {
         setToken(res.data.token);
-        setErrorMessage("");
-        setErrorEmail("");
-        setErrorPassword("");
         //console.log("token==>", res.data.token);
         alert("Connexion réussie");
+        setIsLoading(false);
       }
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error.response.data.error);
     }
   };
-
-  useEffect(() => {
-    handleSignIn();
-    setIsLoading(false);
-  }, []);
 
   return isLoading ? (
     <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
   ) : (
-    <View>
-      <View>
-        <Text>Name: </Text>
-        <TextInput
-          placeholder="Username"
-          value={email}
-          onChangeText={(email) => {
-            setEmail(email);
-          }}
-        />
-        <Text style={{ color: "red", fontStyle: "italic" }}>{errorEmail}</Text>
-        <Text>Password: </Text>
-        <TextInput
-          placeholder="Password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(password) => {
-            setPassword(password);
-          }}
-        />
-        <Text style={{ color: "red", fontStyle: "italic" }}>
-          {errorPassword}
-        </Text>
-        <Button title="Sign in" onPress={handleSignIn} />
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("SignUp");
-          }}
-        >
-          <Text style={{ color: "red", fontStyle: "italic" }}>
-            {errorMessage}
+    <ScrollView>
+      <View style={styles.mainContainer}>
+        <KeyboardAwareScrollView>
+          <Image source={require("../assets/logo.png")} style={styles.logo} />
+          <TextInput
+            style={styles.input}
+            placeholder="Your Email"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Your Password"
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            autoCapitalize="none"
+            secureTextEntry
+          />
+          <Text style={{ color: "red", marginTop: 5 }}>{error}</Text>
+          <TouchableOpacity style={styles.btn} onPress={handleSignIn}>
+            <Text>Sign in</Text>
+          </TouchableOpacity>
+          <Text
+            onPress={() => {
+              navigation.navigate("SignUp");
+            }}
+          >
+            No account ? Register
           </Text>
-          <Text>Create an account</Text>
-        </TouchableOpacity>
+        </KeyboardAwareScrollView>
       </View>
-    </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    marginVertical: 25,
+    alignItems: "center",
+  },
+
+  logo: {
+    width: 100,
+    height: 100,
+  },
+  input: {
+    borderBottomColor: "#ffbac0",
+    borderBottomWidth: 2,
+    height: 40,
+    width: 300,
+    marginTop: 40,
+  },
+  btn: {
+    borderColor: "#ffbac0",
+    borderWidth: 3,
+    height: 50,
+    width: 200,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 40,
+    borderRadius: 10,
+  },
+});

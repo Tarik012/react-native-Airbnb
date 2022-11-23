@@ -5,11 +5,14 @@ import {
   View,
   Image,
   StyleSheet,
+  ScrollView,
+  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function SignUpScreen({ setToken }) {
   const navigation = useNavigation();
@@ -18,23 +21,26 @@ export default function SignUpScreen({ setToken }) {
   const [description, setDescription] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignUp = async () => {
-    setErrorMessage("");
+    setError("");
 
     if (!email || !username || !description || !password) {
-      setErrorMessage("Veuillez renseigner tous les champs.");
+      setError("Veuillez renseigner tous les champs.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMessage("les mots de passe doivent être identiques !");
+      setError("les mots de passe doivent être identiques !");
       return;
     }
 
+    setIsLoading(true);
+
     try {
+      //console.log("coucou =>", email, description, username, password);
       const res = await axios.post(
         "https://express-airbnb-api.herokuapp.com/user/sign_up",
         {
@@ -44,96 +50,75 @@ export default function SignUpScreen({ setToken }) {
           description,
         }
       );
-      console.log(res.data);
+      //console.log("ici =>", res.data);
 
       if (res.data.token) {
         setToken(res.data.token);
-        console.log("token==>", res.data.token);
+        //console.log("token==>", res.data.token);
         alert("Connexion réussie");
+        setIsLoading(false);
       }
     } catch (error) {
-      console.log(error.response);
+      console.log(error.response.status);
+      // 3 BACK Vérifier que l'email soit dispo
+      // 4 BACK Vérifier que le username soit dispo
+      const message = error.response.data.error;
+      console.log(message);
 
-      // const message = error.response.error;
-      // if (error.response.status === 401 || error.response.status === 400) {
-      //   setErrorMessage(message);
-      // }
+      if (error.response.status === 401 || error.response.status === 400) {
+        setError(message);
+      }
     }
   };
-
-  useEffect(() => {
-    handleSignUp();
-    setIsLoading(false);
-  }, []);
 
   return isLoading ? (
     <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
   ) : (
-    <View>
-      <View>
+    <ScrollView>
+      <View style={styles.mainContainer}>
         <KeyboardAwareScrollView>
-          <Image
-            style={styles.logo}
-            source={require("../assets/logo.png")}
-            resizeMode="contain"
-          />
-          <Text>Email: </Text>
+          <Image source={require("../assets/logo.png")} style={styles.logo} />
           <TextInput
-            placeholder="email"
-            autoCapitalize="none" // pas de majuscule au début à la saisie
+            style={styles.input}
+            placeholder="Your Email"
+            onChangeText={(text) => setEmail(text)}
             value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-            }}
-          />
-          <Text>Name: </Text>
-          <TextInput
-            placeholder="username"
             autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Your Username"
+            onChangeText={(text) => setUsername(text)}
             value={username}
-            onChangeText={(username) => {
-              setUsername(username);
-            }}
-          />
-          <Text>Description: </Text>
-          <TextInput
-            style={{
-              height: 100,
-              borderColor: "gray",
-              borderWidth: 1,
-              marginBottom: 10,
-            }}
-            placeholder="Describe yourself in a few words"
             autoCapitalize="none"
-            multiline={true}
-            textAlignVertical="top"
-            value={description}
-            onChangeText={(text) => {
-              setDescription(text);
-            }}
           />
           <TextInput
-            placeholder="password"
-            autoCapitalize="none"
-            secureTextEntry={true}
+            style={styles.input}
+            placeholder="Your Password"
+            onChangeText={(text) => setPassword(text)}
             value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-            }}
+            autoCapitalize="none"
+            secureTextEntry
           />
           <TextInput
-            placeholder="confirm password"
-            autoCapitalize="none"
-            secureTextEntry={true}
+            style={styles.input}
+            placeholder="Confirm Your password"
+            onChangeText={(text) => setConfirmPassword(text)}
             value={confirmPassword}
-            onChangeText={(text) => {
-              setConfirmPassword(text);
-            }}
+            autoCapitalize="none"
+            secureTextEntry
           />
-          <Button title="Sign up" onPress={handleSignUp} />
-          <Text style={{ color: "red", fontStyle: "italic" }}>
-            {errorMessage}
-          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Your description"
+            onChangeText={(text) => setDescription(text)}
+            value={description}
+            autoCapitalize="none"
+          />
+          <Text style={{ color: "red", marginTop: 5 }}>{error}</Text>
+          <TouchableOpacity style={styles.btn} onPress={handleSignUp}>
+            <Text>Sign up</Text>
+          </TouchableOpacity>
           <Text
             onPress={() => {
               navigation.navigate("SignIn");
@@ -143,13 +128,35 @@ export default function SignUpScreen({ setToken }) {
           </Text>
         </KeyboardAwareScrollView>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    marginVertical: 25,
+    alignItems: "center",
+  },
+
   logo: {
     width: 100,
     height: 100,
+  },
+  input: {
+    borderBottomColor: "#ffbac0",
+    borderBottomWidth: 2,
+    height: 40,
+    width: 300,
+    marginTop: 40,
+  },
+  btn: {
+    borderColor: "#ffbac0",
+    borderWidth: 3,
+    height: 50,
+    width: 200,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 40,
+    borderRadius: 10,
   },
 });
