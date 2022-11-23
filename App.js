@@ -10,6 +10,7 @@ import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
 import SplashScreen from "./containers/SplashScreen";
+import Room from "./containers/Room";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -52,7 +53,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Tab">
         {userToken === null ? (
           // No token found, user isn't signed in
           <>
@@ -65,77 +66,88 @@ export default function App() {
           </>
         ) : (
           // User is signed in ! 🎉
-          <Stack.Screen name="Tab" options={{ headerShown: false }}>
-            {() => (
-              <Tab.Navigator
-                screenOptions={{
-                  headerShown: false,
-                  tabBarActiveTintColor: "tomato",
-                  tabBarInactiveTintColor: "gray",
-                }}
-              >
-                <Tab.Screen
-                  name="TabHome"
-                  options={{
-                    tabBarLabel: "Home",
-                    tabBarIcon: ({ color, size }) => (
-                      <Ionicons name={"ios-home"} size={size} color={color} />
-                    ),
+          <>
+            <Stack.Screen name="Tab" options={{ headerShown: false }}>
+              {() => (
+                <Tab.Navigator
+                  screenOptions={{
+                    headerShown: false,
+                    tabBarActiveTintColor: "tomato",
+                    tabBarInactiveTintColor: "gray",
                   }}
                 >
-                  {() => (
-                    <Stack.Navigator>
-                      <Stack.Screen
-                        name="Home"
-                        options={{
-                          title: "My App",
-                          headerStyle: { backgroundColor: "red" },
-                          headerTitleStyle: { color: "white" },
-                        }}
-                      >
-                        {() => <HomeScreen />}
-                      </Stack.Screen>
+                  <Tab.Screen
+                    name="TabHome"
+                    options={{
+                      tabBarLabel: "Home",
+                      tabBarIcon: ({ color, size }) => (
+                        <Ionicons name={"ios-home"} size={size} color={color} />
+                      ),
+                    }}
+                  >
+                    {() => (
+                      <Stack.Navigator>
+                        <Stack.Screen
+                          name="Home"
+                          options={{
+                            title: "My App",
+                            headerStyle: { backgroundColor: "red" },
+                            headerTitleStyle: { color: "white" },
+                          }}
+                        >
+                          {() => <HomeScreen />}
+                        </Stack.Screen>
 
-                      <Stack.Screen
-                        name="Profile"
-                        options={{
-                          title: "User Profile",
-                        }}
-                      >
-                        {() => <ProfileScreen />}
-                      </Stack.Screen>
-                    </Stack.Navigator>
-                  )}
-                </Tab.Screen>
-                <Tab.Screen
-                  name="TabSettings"
-                  options={{
-                    tabBarLabel: "Settings",
-                    tabBarIcon: ({ color, size }) => (
-                      <Ionicons
-                        name={"ios-options"}
-                        size={size}
-                        color={color}
-                      />
-                    ),
-                  }}
-                >
-                  {() => (
-                    <Stack.Navigator>
-                      <Stack.Screen
-                        name="Settings"
-                        options={{
-                          title: "Settings",
-                        }}
-                      >
-                        {() => <SettingsScreen setToken={setToken} />}
-                      </Stack.Screen>
-                    </Stack.Navigator>
-                  )}
-                </Tab.Screen>
-              </Tab.Navigator>
-            )}
-          </Stack.Screen>
+                        <Stack.Screen
+                          name="Profile"
+                          options={{
+                            title: "User Profile",
+                          }}
+                        >
+                          {() => <ProfileScreen />}
+                        </Stack.Screen>
+
+                        <Stack.Screen
+                          name="Room"
+                          options={{
+                            title: "Room",
+                          }}
+                        >
+                          {() => <Room />}
+                        </Stack.Screen>
+                      </Stack.Navigator>
+                    )}
+                  </Tab.Screen>
+                  <Tab.Screen
+                    name="TabSettings"
+                    options={{
+                      tabBarLabel: "Settings",
+                      tabBarIcon: ({ color, size }) => (
+                        <Ionicons
+                          name={"ios-options"}
+                          size={size}
+                          color={color}
+                        />
+                      ),
+                    }}
+                  >
+                    {() => (
+                      <Stack.Navigator>
+                        <Stack.Screen
+                          name="Settings"
+                          options={{
+                            title: "Settings",
+                          }}
+                        >
+                          {() => <SettingsScreen setToken={setToken} />}
+                        </Stack.Screen>
+                      </Stack.Navigator>
+                    )}
+                  </Tab.Screen>
+                </Tab.Navigator>
+              )}
+            </Stack.Screen>
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

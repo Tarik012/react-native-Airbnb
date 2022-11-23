@@ -29,6 +29,8 @@ export default function SignInScreen({ setToken }) {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const res = await axios.post(
         "https://express-airbnb-api.herokuapp.com/user/log_in",
@@ -42,7 +44,7 @@ export default function SignInScreen({ setToken }) {
       if (res.data.token) {
         setToken(res.data.token);
         //console.log("token==>", res.data.token);
-        alert("Connexion réussie");
+        //alert("Connexion réussie");
         setIsLoading(false);
       }
     } catch (error) {

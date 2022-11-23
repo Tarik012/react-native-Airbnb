@@ -55,8 +55,11 @@ export default function SignUpScreen({ setToken }) {
       if (res.data.token) {
         setToken(res.data.token);
         //console.log("token==>", res.data.token);
-        alert("Connexion réussie");
+        //alert("Connexion réussie");
         setIsLoading(false);
+
+        await AsyncStorage.setItem("userToken", res.data.token);
+        navigation.navigate("Home");
       }
     } catch (error) {
       console.log(error.response.status);
