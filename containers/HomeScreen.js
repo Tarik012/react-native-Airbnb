@@ -42,8 +42,8 @@ export default function HomeScreen() {
     const tab = [];
     for (let index = 0; index < 5; index++) {
       index < nbYellowStars
-        ? tab.push(<Ionicons name="star" size={24} color="gold" />)
-        : tab.push(<Ionicons name="star" size={24} color="grey" />);
+        ? tab.push(<Ionicons name="star" size={24} color="gold" key={index} />)
+        : tab.push(<Ionicons name="star" size={24} color="grey" key={index} />);
     }
     return tab;
   };
@@ -61,14 +61,13 @@ export default function HomeScreen() {
               navigation.navigate("Room", { roomId: item._id });
             }}
           >
-            <View style={styles.container}>
+            <View style={styles.container} key={item._id}>
               <View style={styles.pictureContainer}>
                 <Image
                   source={{
                     uri: `${item.photos[0].url}`,
                   }}
                   style={styles.picture}
-                  resizeMode="contain"
                 />
               </View>
               <Text style={styles.price}>{item.price} €</Text>
@@ -100,14 +99,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         )}
       />
-
-      {/* <Text>Bienvenu sur la page Home ! (page d'accueil)</Text>
-      <Button
-        title="Go to Profile"
-        onPress={() => {
-          navigation.navigate("Profile", { userId: 123 });
-        }}
-      /> */}
     </View>
   );
 }
@@ -154,7 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     width: 60,
     position: "absolute",
-    top: 140,
+    top: 180,
     paddingLeft: 10,
   },
   photo: {

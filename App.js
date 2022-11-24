@@ -81,7 +81,7 @@ export default function App() {
                     tabBarInactiveTintColor: "gray",
                   }}
                 >
-                  {/***************** TAB SCREEN POUR HOME  ***************/}
+                  {/***************** TAB SCREEN POUR HOME (HOME, PROFIL et ROOM) ***************/}
 
                   <Tab.Screen
                     name="TabHome"

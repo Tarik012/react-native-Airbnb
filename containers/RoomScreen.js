@@ -7,7 +7,7 @@ import axios from "axios";
 export default function RoomScreen({ route }) {
   const { params } = useRoute();
   const navigation = useNavigation();
-  const [data, setData] = useState(null);
+  const [room, setRoom] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const roomId = params.roomId;
@@ -16,16 +16,11 @@ export default function RoomScreen({ route }) {
     if (roomId) {
       try {
         const res = await axios.get(
-          "https://express-airbnb-api.herokuapp.com/rooms/",
-          {
-            params: {
-              id: roomId,
-            },
-          }
+          `https://express-airbnb-api.herokuapp.com/rooms/${roomId}`
         );
 
-        //console.log("res=>", res.data);
-        setData(res.data);
+        console.log("res=>", res.data);
+        setRoom(res.data);
         console.log("data=>", data);
       } catch (error) {
         console.log(error.response);
@@ -40,44 +35,54 @@ export default function RoomScreen({ route }) {
     setIsLoading(false);
   }, []);
 
+  // fonction qui ajoute les étoiles en focntion de la note
+  const getStars = (nbYellowStars) => {
+    const tab = [];
+    for (let index = 0; index < 5; index++) {
+      index < nbYellowStars
+        ? tab.push(<Ionicons name="star" size={24} color="gold" />)
+        : tab.push(<Ionicons name="star" size={24} color="grey" />);
+    }
+    return tab;
+  };
+
   return isLoading ? (
     <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
   ) : (
-    <Text>TEST</Text>
-    // <View style={{ marginLeft: 20, marginRight: 20 }}>
-    //   <View style={styles.container}>
-    //     <View style={styles.pictureContainer}>
-    //       {/* <Image
-    //         source={{
-    //           uri: `${data.photos[0].url}`,
-    //         }}
-    //         style={styles.picture}
-    //         resizeMode="contain"
-    //       /> */}
-    //     </View>
-    //     <Text style={styles.price}>{data.price} €</Text>
-    //     <View style={styles.detailsContainer}>
-    //       <View style={styles.leftDetails}>
-    //         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-    //           {data.title}
-    //         </Text>
-    //         <View style={styles.stars}>
-    //           <Text> {getStars(data.ratingValue)}</Text>
-    //           <Text style={styles.review}> {data.reviews} reviews</Text>
-    //         </View>
-    //       </View>
-    //       <View style={styles.rightDetails}>
-    //         <Image
-    //           source={{
-    //             uri: `${data.user.account.photo.url}`,
-    //           }}
-    //           style={styles.photo}
-    //           resizeMode="contain"
-    //         />
-    //       </View>
-    //     </View>
-    //   </View>
-    // </View>
+    <View style={{ marginLeft: 20, marginRight: 20 }}>
+      <View style={styles.container}>
+        <View style={styles.pictureContainer}>
+          {/* <Image
+            source={{
+              uri: `${data.photos[0].url}`,
+            }}
+            style={styles.picture}
+            resizeMode="contain"
+          /> */}
+        </View>
+        <Text style={styles.price}>{room.price} €</Text>
+        <View style={styles.detailsContainer}>
+          <View style={styles.leftDetails}>
+            <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+              {room.title}
+            </Text>
+            <View style={styles.stars}>
+              <Text> {getStars(room.ratingValue)}</Text>
+              <Text style={styles.review}> {room.reviews} reviews</Text>
+            </View>
+          </View>
+          <View style={styles.rightDetails}>
+            <Image
+              source={{
+                uri: `${room.user.account.photo.url}`,
+              }}
+              style={styles.photo}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }
 
