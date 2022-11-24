@@ -158,6 +158,19 @@ export default function App() {
                         <Stack.Screen
                           name="AroundMe"
                           options={{
+                            headerTitleStyle: { color: "#fff" },
+                            headerTitle: (
+                              props // AJOUT DU LOGO DANS LE HEADER
+                            ) => (
+                              <Image
+                                style={{
+                                  width: 200,
+                                  height: 40,
+                                }}
+                                source={require("./assets/logo.png")}
+                                resizeMode="contain"
+                              />
+                            ),
                             title: "Around me",
                           }}
                         >

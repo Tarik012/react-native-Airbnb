@@ -71,8 +71,8 @@ export default function RoomScreen({ route }) {
     const tab = [];
     for (let index = 0; index < 5; index++) {
       index < nbYellowStars
-        ? tab.push(<Ionicons name="star" size={24} color="gold" />)
-        : tab.push(<Ionicons name="star" size={24} color="grey" />);
+        ? tab.push(<Ionicons name="star" size={24} color="gold" key={index} />)
+        : tab.push(<Ionicons name="star" size={24} color="grey" key={index} />);
     }
     return tab;
   };
