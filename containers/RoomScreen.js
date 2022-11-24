@@ -149,13 +149,14 @@ export default function RoomScreen({ route }) {
           </View>
         </View>
       </View>
+
       <View style={styles.containerMap}>
         <MapView
           // La MapView doit obligatoirement avoir des dimensions
           style={styles.map}
           initialRegion={{
-            latitude: 48.856614,
-            longitude: 2.3522219,
+            latitude: room.location[1],
+            longitude: room.location[0],
             latitudeDelta: 0.2,
             longitudeDelta: 0.2,
           }}
@@ -164,13 +165,13 @@ export default function RoomScreen({ route }) {
           {markers.map((marker) => {
             return (
               <MapView.Marker
-                key={marker.id}
+                key={room._id}
                 coordinate={{
-                  latitude: marker.latitude,
-                  longitude: marker.longitude,
+                  latitude: room.location[1],
+                  longitude: room.location[0],
                 }}
-                title={marker.title}
-                description={marker.description}
+                title={room.title}
+                description={room.description}
               />
             );
           })}
