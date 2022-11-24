@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   ImageBackground,
   ScrollView,
-  Button,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 //import { Dimensions } from "react-native";
 import Swiper from "react-native-swiper";
 import { AntDesign } from "@expo/vector-icons";
+import MapView from "react-native-maps";
 
 //const screenWidth = Dimensions.get("window").width;
 //const screenHeight = Dimensions.get("window").height;
@@ -23,6 +24,16 @@ import { AntDesign } from "@expo/vector-icons";
 const tabShowMoreOrLess = [
   <AntDesign name="caretdown" size={17} color="grey" />,
   <AntDesign name="caretup" size={17} color="grey" />,
+];
+
+const markers = [
+  {
+    id: 1,
+    latitude: 48.8564449,
+    longitude: 2.4002913,
+    title: "Le Reacteur",
+    description: "La formation des champion·ne·s !",
+  },
 ];
 
 export default function RoomScreen({ route }) {
@@ -138,6 +149,33 @@ export default function RoomScreen({ route }) {
           </View>
         </View>
       </View>
+      <View style={styles.containerMap}>
+        <MapView
+          // La MapView doit obligatoirement avoir des dimensions
+          style={styles.map}
+          initialRegion={{
+            latitude: 48.856614,
+            longitude: 2.3522219,
+            latitudeDelta: 0.2,
+            longitudeDelta: 0.2,
+          }}
+          showsUserLocation={true}
+        >
+          {markers.map((marker) => {
+            return (
+              <MapView.Marker
+                key={marker.id}
+                coordinate={{
+                  latitude: marker.latitude,
+                  longitude: marker.longitude,
+                }}
+                title={marker.title}
+                description={marker.description}
+              />
+            );
+          })}
+        </MapView>
+      </View>
     </View>
   );
 }
@@ -150,6 +188,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     marginLeft: 10,
     marginRight: 10,
+    // borderColor: "black",
+    // borderWidth: 1,
   },
   wrapper: {
     height: 300,
@@ -222,5 +262,15 @@ const styles = StyleSheet.create({
   divShow: {
     flexDirection: "row",
     marginTop: 15,
+  },
+  containerMap: {
+    // flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  map: {
+    width: Dimensions.get("window").width,
+    height: 200,
   },
 });
