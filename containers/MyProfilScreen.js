@@ -1,11 +1,11 @@
 import { useRoute } from "@react-navigation/core";
 import { Text, View } from "react-native";
 
-export default function Room({ route }) {
+export default function MyProfileScreen() {
   const { params } = useRoute();
   return (
     <View>
-      <Text>room id : {params.roomId}</Text>
+      <Text>My profil page screen</Text>
     </View>
   );
 }

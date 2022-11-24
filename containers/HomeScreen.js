@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/core";
 import { useEffect, useState } from "react";
 import {
-  Button,
   Text,
   View,
   FlatList,
@@ -52,15 +51,14 @@ export default function HomeScreen() {
   return isLoading ? (
     <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
   ) : (
-    <View>
+    <View style={{ marginLeft: 20, marginRight: 20 }}>
       <FlatList
         data={data}
         keyExtractor={(item) => String(item._id)}
         renderItem={({ item }) => (
           <TouchableOpacity
-            title="Press here"
             onPress={() => {
-              navigation.navigate("Room", { roomId: "111" });
+              navigation.navigate("Room", { roomId: item._id });
             }}
           >
             <View style={styles.container}>
@@ -73,11 +71,30 @@ export default function HomeScreen() {
                   resizeMode="contain"
                 />
               </View>
+              <Text style={styles.price}>{item.price} €</Text>
               <View style={styles.detailsContainer}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.price}>{item.price} €</Text>
-                <Text> {getStars(item.ratingValue)}</Text>
-                <Text> {item.reviews} reviews</Text>
+                <View style={styles.leftDetails}>
+                  <Text
+                    style={styles.title}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {item.title}
+                  </Text>
+                  <View style={styles.stars}>
+                    <Text> {getStars(item.ratingValue)}</Text>
+                    <Text style={styles.review}> {item.reviews} reviews</Text>
+                  </View>
+                </View>
+                <View style={styles.rightDetails}>
+                  <Image
+                    source={{
+                      uri: `${item.user.account.photo.url}`,
+                    }}
+                    style={styles.photo}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
             </View>
           </TouchableOpacity>
@@ -97,18 +114,40 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    width: screenWidth,
-    borderWidth: 1,
-    borderColor: "blue",
+    borderBottomWidth: 0.5,
+    borderBottomColor: "grey",
+    paddingTop: 20,
+    paddingBottom: 10,
+  },
+  pictureContainer: {
+    flex: 2,
+    marginBottom: 10,
   },
   picture: {
+    width: 428,
     height: 200,
-    width: 200,
     position: "relative",
   },
+  detailsContainer: {
+    flexDirection: "row",
+  },
+  leftDetails: {
+    flex: 2,
+    alignItems: "flex-start",
+    justifyContent: "space-around",
+  },
+  rightDetails: {
+    flex: 0.5,
+  },
+  stars: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  review: {
+    color: "grey",
+  },
   title: {
-    fontSize: 17,
-    fontWeight: "bold",
+    fontSize: 19,
   },
   price: {
     color: "white",
@@ -117,5 +156,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 140,
     paddingLeft: 10,
+  },
+  photo: {
+    height: 80,
+    width: 80,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
 });

@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
+import { Image, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import HomeScreen from "./containers/HomeScreen";
 import ProfileScreen from "./containers/ProfileScreen";
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
 import SplashScreen from "./containers/SplashScreen";
-import Room from "./containers/Room";
+import RoomScreen from "./containers/RoomScreen";
+import AroundMeScreen from "./containers/AroundMeScreen";
+import MyProfilScreen from "./containers/MyProfilScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -76,6 +81,8 @@ export default function App() {
                     tabBarInactiveTintColor: "gray",
                   }}
                 >
+                  {/***************** TAB SCREEN POUR HOME  ***************/}
+
                   <Tab.Screen
                     name="TabHome"
                     options={{
@@ -89,9 +96,20 @@ export default function App() {
                       <Stack.Navigator>
                         <Stack.Screen
                           name="Home"
+                          headerShown
                           options={{
-                            title: "My App",
-                            headerStyle: { backgroundColor: "red" },
+                            headerTitleStyle: { color: "#fff" },
+                            headerTitle: (
+                              props // AJOUT DU LOGO DANS LE HEADER
+                            ) => (
+                              <Image
+                                style={{ width: 200, height: 40 }}
+                                source={require("./assets/logo.png")}
+                                resizeMode="contain"
+                              />
+                            ),
+                            title: "My home",
+                            headerStyle: { backgroundColor: "white" },
                             headerTitleStyle: { color: "white" },
                           }}
                         >
@@ -113,11 +131,70 @@ export default function App() {
                             title: "Room",
                           }}
                         >
-                          {() => <Room />}
+                          {() => <RoomScreen />}
                         </Stack.Screen>
                       </Stack.Navigator>
                     )}
                   </Tab.Screen>
+
+                  {/***************** TAB SCREEN POUR AROUND ME  ***************/}
+
+                  <Tab.Screen
+                    name="TabAround"
+                    options={{
+                      tabBarLabel: "Around me",
+
+                      tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons
+                          name="map-marker-outline"
+                          size={24}
+                          color="grey"
+                        />
+                      ),
+                    }}
+                  >
+                    {() => (
+                      <Stack.Navigator>
+                        <Stack.Screen
+                          name="AroundMe"
+                          options={{
+                            title: "Around me",
+                          }}
+                        >
+                          {() => <AroundMeScreen setToken={setToken} />}
+                        </Stack.Screen>
+                      </Stack.Navigator>
+                    )}
+                  </Tab.Screen>
+
+                  {/***************** TAB SCREEN POUR MY PROFILE  ***************/}
+
+                  <Tab.Screen
+                    name="TabProfil"
+                    options={{
+                      tabBarLabel: "My profil",
+
+                      tabBarIcon: ({ color, size }) => (
+                        <AntDesign name="user" size={24} color="grey" />
+                      ),
+                    }}
+                  >
+                    {() => (
+                      <Stack.Navigator>
+                        <Stack.Screen
+                          name="MyProfil"
+                          options={{
+                            title: "My profil",
+                          }}
+                        >
+                          {() => <MyProfilScreen setToken={setToken} />}
+                        </Stack.Screen>
+                      </Stack.Navigator>
+                    )}
+                  </Tab.Screen>
+
+                  {/***************** TAB SCREEN POUR SETTINGS  ***************/}
+
                   <Tab.Screen
                     name="TabSettings"
                     options={{
@@ -153,3 +230,7 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  cover: { height: 300, width: 200, marginTop: 100 },
+});
