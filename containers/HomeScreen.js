@@ -8,13 +8,14 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { Dimensions } from "react-native";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get("window").width;
-const screenHeight = Dimensions.get("window").height;
+//const screenHeight = Dimensions.get("window").height;
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -27,6 +28,7 @@ export default function HomeScreen() {
         "https://express-airbnb-api.herokuapp.com/rooms"
       );
       setData(res.data);
+      setIsLoading(false);
     } catch (error) {
       console.log(error.response);
     }
@@ -34,7 +36,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchPictures();
-    setIsLoading(false);
   }, []);
 
   // fonction qui ajoute les étoiles en focntion de la note
@@ -63,14 +64,15 @@ export default function HomeScreen() {
           >
             <View style={styles.container} key={item._id}>
               <View style={styles.pictureContainer}>
-                <Image
-                  source={{
-                    uri: `${item.photos[0].url}`,
-                  }}
-                  style={styles.picture}
-                />
+                <ImageBackground
+                  style={styles.bgImg}
+                  source={{ uri: item.photos[0].url }}
+                >
+                  <View style={styles.priceView}>
+                    <Text style={styles.priceText}>{item.price} €</Text>
+                  </View>
+                </ImageBackground>
               </View>
-              <Text style={styles.price}>{item.price} €</Text>
               <View style={styles.detailsContainer}>
                 <View style={styles.leftDetails}>
                   <Text
@@ -114,6 +116,23 @@ const styles = StyleSheet.create({
     flex: 2,
     marginBottom: 10,
   },
+  bgImg: {
+    height: 250,
+    width: screenWidth * 0.9,
+    justifyContent: "flex-end",
+  },
+  priceView: {
+    backgroundColor: "black",
+    width: 100,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  priceText: {
+    color: "white",
+    fontSize: 20,
+  },
   picture: {
     width: 428,
     height: 200,
@@ -139,14 +158,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 19,
-  },
-  price: {
-    color: "white",
-    backgroundColor: "black",
-    width: 60,
-    position: "absolute",
-    top: 180,
-    paddingLeft: 10,
   },
   photo: {
     height: 80,

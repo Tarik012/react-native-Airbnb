@@ -1,14 +1,36 @@
 import { useRoute } from "@react-navigation/core";
-import { Text, View, Image, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  ImageBackground,
+  ScrollView,
+  Button,
+} from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Ionicons } from "@expo/vector-icons";
+//import { Dimensions } from "react-native";
+import Swiper from "react-native-swiper";
+import { AntDesign } from "@expo/vector-icons";
+
+//const screenWidth = Dimensions.get("window").width;
+//const screenHeight = Dimensions.get("window").height;
+
+const tabShowMoreOrLess = [
+  <AntDesign name="caretdown" size={17} color="grey" />,
+  <AntDesign name="caretup" size={17} color="grey" />,
+];
 
 export default function RoomScreen({ route }) {
   const { params } = useRoute();
   const navigation = useNavigation();
   const [room, setRoom] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [displayMoreOrLess, setDisplayMoreOrLess] = useState(true);
 
   const roomId = params.roomId;
 
@@ -19,9 +41,8 @@ export default function RoomScreen({ route }) {
           `https://express-airbnb-api.herokuapp.com/rooms/${roomId}`
         );
 
-        console.log("res=>", res.data);
         setRoom(res.data);
-        console.log("data=>", data);
+        setIsLoading(false); // à mettre dans la fonction exécutée sinon il s'exécute avant que le state room reçoive les infos (erreur: "null is not an object (evaluating 'room.price')")
       } catch (error) {
         console.log(error.response);
       }
@@ -32,7 +53,6 @@ export default function RoomScreen({ route }) {
 
   useEffect(() => {
     fetchRoomById();
-    setIsLoading(false);
   }, []);
 
   // fonction qui ajoute les étoiles en focntion de la note
@@ -46,21 +66,38 @@ export default function RoomScreen({ route }) {
     return tab;
   };
 
+  // fonction qui permets d'afficher 3 lignes ou plus si l'on clique sur le bouton et modifie le texte au passage
+  const handleShow = () => {
+    setDisplayMoreOrLess(!displayMoreOrLess);
+  };
+
   return isLoading ? (
     <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
   ) : (
-    <View style={{ marginLeft: 20, marginRight: 20 }}>
-      <View style={styles.container}>
-        <View style={styles.pictureContainer}>
-          {/* <Image
-            source={{
-              uri: `${data.photos[0].url}`,
-            }}
-            style={styles.picture}
-            resizeMode="contain"
-          /> */}
+    <View>
+      <ScrollView>
+        <Swiper
+          style={styles.wrapper}
+          dotColor="salmon"
+          activeDotColor="red"
+          autoplay
+        >
+          {room.photos.map((photo) => {
+            return (
+              <View style={styles.slide} key={photo.picture_id}>
+                <ImageBackground
+                  style={styles.bgImg}
+                  source={{ uri: `${photo.url}` }}
+                ></ImageBackground>
+              </View>
+            );
+          })}
+        </Swiper>
+        <View style={styles.priceView}>
+          <Text style={styles.priceText}>{room.price} €</Text>
         </View>
-        <Text style={styles.price}>{room.price} €</Text>
+      </ScrollView>
+      <View style={styles.container}>
         <View style={styles.detailsContainer}>
           <View style={styles.leftDetails}>
             <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
@@ -81,6 +118,25 @@ export default function RoomScreen({ route }) {
             />
           </View>
         </View>
+        <View style={styles.description}>
+          <Text
+            numberOfLines={displayMoreOrLess ? 3 : null}
+            ellipsizeMode="tail"
+          >
+            {room.description}
+          </Text>
+          <View style={styles.divShow}>
+            <Text
+              style={{ color: "grey", marginRight: 10 }}
+              onPress={handleShow}
+            >
+              {displayMoreOrLess ? "Show more" : "Show less"}
+            </Text>
+            <Text>
+              {displayMoreOrLess ? tabShowMoreOrLess[0] : tabShowMoreOrLess[1]}
+            </Text>
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -92,15 +148,36 @@ const styles = StyleSheet.create({
     borderBottomColor: "grey",
     paddingTop: 20,
     paddingBottom: 10,
+    marginLeft: 10,
+    marginRight: 10,
   },
-  pictureContainer: {
-    flex: 2,
+  wrapper: {
+    height: 300,
+  },
+  slide: {
+    height: 300,
+  },
+  bgImg: {
+    height: "100%",
+    width: "100%",
+    // height: 250,
+    // width: screenWidth * 0.9,
+    justifyContent: "flex-end",
+  },
+  priceView: {
+    backgroundColor: "black",
+    width: 100,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 10,
+    position: "absolute",
+    bottom: 0,
+    left: 2,
   },
-  picture: {
-    width: 428,
-    height: 200,
-    position: "relative",
+  priceText: {
+    color: "white",
+    fontSize: 20,
   },
   detailsContainer: {
     flexDirection: "row",
@@ -138,5 +215,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 50,
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
+  },
+  description: {
+    marginTop: 15,
+  },
+  divShow: {
+    flexDirection: "row",
+    marginTop: 15,
   },
 });
