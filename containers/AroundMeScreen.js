@@ -4,7 +4,7 @@ import { Text, View, StyleSheet, ActivityIndicator, Image } from "react-native";
 
 import * as Location from "expo-location";
 
-import { MapView, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { Dimensions } from "react-native";
 
@@ -26,7 +26,6 @@ export default function AroundMeScreen({ setToken }) {
 
   const getPositions = async (latitude, longitude) => {
     try {
-      console.log("latitude", latitude);
       const res = await axios.get(
         `https://express-airbnb-api.herokuapp.com/rooms/around/?latitude=${latitude}&longitude=${longitude}`
       );
@@ -89,7 +88,7 @@ export default function AroundMeScreen({ setToken }) {
             <MapView
               // La MapView doit obligatoirement avoir des dimensions
               style={styles.map}
-              provider={PROVIDER_GOOGLE}
+              // provider={PROVIDER_GOOGLE}
               initialRegion={{
                 latitude: coords.latitude,
                 longitude: coords.longitude,
