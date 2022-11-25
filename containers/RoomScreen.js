@@ -8,6 +8,7 @@ import {
   ImageBackground,
   ScrollView,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { useEffect, useState } from "react";

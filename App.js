@@ -4,9 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
+import {
+  Ionicons,
+  AntDesign,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import HomeScreen from "./containers/HomeScreen";
 import ProfileScreen from "./containers/ProfileScreen";
 import SignInScreen from "./containers/SignInScreen";
@@ -77,7 +79,7 @@ export default function App() {
                 <Tab.Navigator
                   screenOptions={{
                     headerShown: false,
-                    tabBarActiveTintColor: "tomato",
+                    tabBarActiveTintColor: "tomato", //couleur à la sélection
                     tabBarInactiveTintColor: "gray",
                   }}
                 >
@@ -175,6 +177,15 @@ export default function App() {
                           }}
                         >
                           {() => <AroundMeScreen setToken={setToken} />}
+                        </Stack.Screen>
+
+                        <Stack.Screen
+                          name="Room"
+                          options={{
+                            title: "Room",
+                          }}
+                        >
+                          {() => <RoomScreen />}
                         </Stack.Screen>
                       </Stack.Navigator>
                     )}
