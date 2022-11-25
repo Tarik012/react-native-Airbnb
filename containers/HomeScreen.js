@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Dimensions } from "react-native";
 import axios from "axios";
-import { Ionicons } from "@expo/vector-icons";
+import { getStars } from "./utils/Functions";
 
 const screenWidth = Dimensions.get("window").width;
 //const screenHeight = Dimensions.get("window").height;
@@ -37,17 +37,6 @@ export default function HomeScreen() {
   useEffect(() => {
     fetchPictures();
   }, []);
-
-  // fonction qui ajoute les étoiles en focntion de la note
-  const getStars = (nbYellowStars) => {
-    const tab = [];
-    for (let index = 0; index < 5; index++) {
-      index < nbYellowStars
-        ? tab.push(<Ionicons name="star" size={24} color="gold" key={index} />)
-        : tab.push(<Ionicons name="star" size={24} color="grey" key={index} />);
-    }
-    return tab;
-  };
 
   return isLoading ? (
     <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />

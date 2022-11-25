@@ -4,7 +4,7 @@ import { Text, View, StyleSheet, ActivityIndicator, Image } from "react-native";
 
 import * as Location from "expo-location";
 
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { MapView, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { Dimensions } from "react-native";
 
@@ -24,12 +24,9 @@ export default function AroundMeScreen({ setToken }) {
   const [coords, setCoords] = useState();
   const [positions, setPositions] = useState([]);
 
-  //A FAIRE
-  // Reprendre la requete des rooms et récupérer via axios les SVGTextPositioningElementles mettres dans tableau ou
-  // objet puis faire un map dessus et ajouter les markers sur la map
-
   const getPositions = async (latitude, longitude) => {
     try {
+      console.log("latitude", latitude);
       const res = await axios.get(
         `https://express-airbnb-api.herokuapp.com/rooms/around/?latitude=${latitude}&longitude=${longitude}`
       );

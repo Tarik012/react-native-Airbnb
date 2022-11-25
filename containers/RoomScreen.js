@@ -8,7 +8,6 @@ import {
   ImageBackground,
   ScrollView,
   Dimensions,
-  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { useEffect, useState } from "react";
@@ -18,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
 import { AntDesign } from "@expo/vector-icons";
 import MapView from "react-native-maps";
+import { getStars } from "./utils/Functions";
 
 //const screenWidth = Dimensions.get("window").width;
 //const screenHeight = Dimensions.get("window").height;
@@ -66,17 +66,6 @@ export default function RoomScreen({ route }) {
   useEffect(() => {
     fetchRoomById();
   }, []);
-
-  // fonction qui ajoute les étoiles en focntion de la note
-  const getStars = (nbYellowStars) => {
-    const tab = [];
-    for (let index = 0; index < 5; index++) {
-      index < nbYellowStars
-        ? tab.push(<Ionicons name="star" size={24} color="gold" key={index} />)
-        : tab.push(<Ionicons name="star" size={24} color="grey" key={index} />);
-    }
-    return tab;
-  };
 
   // fonction qui permets d'afficher 3 lignes ou plus si l'on clique sur le bouton et modifie le texte au passage
   const handleShow = () => {
