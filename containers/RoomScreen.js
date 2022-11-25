@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 //import { Dimensions } from "react-native";
 import Swiper from "react-native-swiper";
 import { AntDesign } from "@expo/vector-icons";
-import MapView from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { getStars } from "./utils/Functions";
 
 //const screenWidth = Dimensions.get("window").width;
@@ -27,15 +27,15 @@ const tabShowMoreOrLess = [
   <AntDesign name="caretup" size={17} color="grey" />,
 ];
 
-const markers = [
-  {
-    id: 1,
-    latitude: 48.8564449,
-    longitude: 2.4002913,
-    title: "Le Reacteur",
-    description: "La formation des champion·ne·s !",
-  },
-];
+// const markers = [
+//   {
+//     id: 1,
+//     latitude: 48.8564449,
+//     longitude: 2.4002913,
+//     title: "Le Reacteur",
+//     description: "La formation des champion·ne·s !",
+//   },
+// ];
 
 export default function RoomScreen({ route }) {
   const { params } = useRoute();
@@ -152,19 +152,15 @@ export default function RoomScreen({ route }) {
           }}
           showsUserLocation={true}
         >
-          {markers.map((marker) => {
-            return (
-              <MapView.Marker
-                key={room._id}
-                coordinate={{
-                  latitude: room.location[1],
-                  longitude: room.location[0],
-                }}
-                title={room.title}
-                description={room.description}
-              />
-            );
-          })}
+          <Marker
+            key={roomId}
+            coordinate={{
+              latitude: room.location[1],
+              longitude: room.location[0],
+            }}
+            title={room.title}
+            description={room.description}
+          />
         </MapView>
       </View>
     </View>
