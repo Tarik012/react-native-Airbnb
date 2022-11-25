@@ -25,16 +25,21 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   // cette fonction sert a la création de compte et à la deconnexion, c'est l'équivalent de cookies
-  const setToken = async (token) => {
+  const setToken = async (token, id) => {
+    // console.log("id dans app setToken===>", id);
     if (token) {
       await AsyncStorage.setItem("userToken", token);
+      await AsyncStorage.setItem("userId", id);
     } else {
       await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("userId");
     }
 
     setUserToken(token);
+    setUserId(id);
   };
 
   useEffect(() => {
@@ -42,10 +47,12 @@ export default function App() {
     const checkIfTokenExists = async () => {
       // We should also handle error for production apps
       const userToken = await AsyncStorage.getItem("userToken");
+      const userId = await AsyncStorage.getItem("userId");
 
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
       setUserToken(userToken);
+      setUserId(userId);
 
       setIsLoading(false);
     };
@@ -124,7 +131,13 @@ export default function App() {
                             title: "User Profile",
                           }}
                         >
-                          {() => <ProfileScreen />}
+                          {(props) => (
+                            <ProfileScreen
+                              {...props}
+                              userId={userId}
+                              bearerToken={userToken}
+                            /> //je passe les props de l'écran HomeScreen à l'écran ProfileScreen
+                          )}
                         </Stack.Screen>
 
                         <Stack.Screen
@@ -194,7 +207,7 @@ export default function App() {
                   {/***************** TAB SCREEN POUR MY PROFILE  ***************/}
 
                   <Tab.Screen
-                    name="TabProfil"
+                    name="TabMyProfil"
                     options={{
                       tabBarLabel: "My profil",
 
@@ -211,7 +224,13 @@ export default function App() {
                             title: "My profil",
                           }}
                         >
-                          {() => <MyProfilScreen setToken={setToken} />}
+                          {(props) => (
+                            <ProfileScreen
+                              {...props}
+                              userId={userId}
+                              bearerToken={userToken}
+                            /> //je passe les props de l'écran HomeScreen à l'écran ProfileScreen
+                          )}
                         </Stack.Screen>
                       </Stack.Navigator>
                     )}

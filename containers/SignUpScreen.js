@@ -14,7 +14,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function SignUpScreen({ setToken }) {
+export default function SignUpScreen({ setToken, setId }) {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -51,14 +51,15 @@ export default function SignUpScreen({ setToken }) {
         }
       );
       //console.log("ici =>", res.data);
-
       if (res.data.token) {
-        setToken(res.data.token);
+        setToken(res.data.token, res.data.id);
+        setId(res.data.Id);
         //console.log("token==>", res.data.token);
         //alert("Connexion réussie");
         setIsLoading(false);
 
         await AsyncStorage.setItem("userToken", res.data.token);
+        await AsyncStorage.setId("userId", res.data.id);
         navigation.navigate("Home");
       }
     } catch (error) {
