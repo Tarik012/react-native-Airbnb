@@ -139,7 +139,7 @@ export default function App() {
                     )}
                   </Tab.Screen>
 
-                  {/***************** TAB SCREEN POUR AROUND ME  ***************/}
+                  {/***************** TAB SCREEN POUR AROUND ME AVEC UNE STACK (ON REPREND AROUNDME et on ajoute ROOM)  ***************/}
 
                   <Tab.Screen
                     name="TabAround"
