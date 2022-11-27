@@ -11,13 +11,14 @@ import {
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
+  Button,
 } from "react-native";
 
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
-//import * as ImagePicker from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
 
 import colors from "../assets/colors";
+
+import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 
 export default function ProfileScreen({ userToken, userId, setToken, setId }) {
   const [email, setEmail] = useState(null);
@@ -147,6 +148,38 @@ export default function ProfileScreen({ userToken, userId, setToken, setId }) {
     }
   };
 
+  // ouvrir la galerie photo du téléphone
+  const uploadPicture = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === "granted") {
+      const result = await ImagePicker.launchImageLibraryAsync();
+
+      if (!result.cancelled) {
+        setPicture(result.uri);
+        if (!isPictureModified) {
+          setIsPictureModified(true);
+        }
+      }
+    }
+    setMessage(false);
+  };
+
+  // accéder à l'appareil photo du téléphone
+  const takePicture = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status === "granted") {
+      const result = await ImagePicker.launchCameraAsync();
+      //console.log("result=>", result);
+      if (!result.cancelled) {
+        setPicture(result.assets[0].uri);
+        if (!isPictureModified) {
+          setIsPictureModified(true);
+        }
+      }
+    }
+    setMessage(false);
+  };
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar barStyle="dark-content" />
@@ -157,48 +190,86 @@ export default function ProfileScreen({ userToken, userId, setToken, setId }) {
           style={{ marginTop: 100 }}
         />
       ) : (
-        <ScrollView>
-          <View style={styles.mainContainer}>
-            <KeyboardAwareScrollView>
-              <TextInput
-                style={styles.input}
-                placeholder={email}
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-                autoCapitalize="none"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder={username}
-                onChangeText={(text) => setUsername(text)}
-                value={username}
-                autoCapitalize="none"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder={description}
-                onChangeText={(text) => setDescription(text)}
-                value={description}
-                autoCapitalize="none"
-              />
-              <Text style={{ color: "red", marginTop: 5 }}>{message}</Text>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View style={styles.topView}>
+            <TouchableOpacity style={styles.pictureView}>
+              {picture ? (
+                <Image
+                  source={{ uri: picture }}
+                  style={styles.picture}
+                  resizeMode="cover"
+                />
+              ) : (
+                <FontAwesome5
+                  name="user-alt"
+                  size={100}
+                  color={colors.lightGrey}
+                />
+              )}
+            </TouchableOpacity>
+            <View style={styles.icons}>
               <TouchableOpacity
-                style={styles.btn}
-                onPress={handleUpdateInformations}
-              >
-                <Text>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.btn}
                 onPress={() => {
-                  setToken(null);
-                  setId(null);
+                  uploadPicture();
                 }}
               >
-                <Text>Log Out</Text>
+                <MaterialIcons
+                  name="photo-library"
+                  size={30}
+                  color={colors.grey}
+                />
               </TouchableOpacity>
-            </KeyboardAwareScrollView>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => {
+                  takePicture();
+                }}
+              >
+                <FontAwesome5 name="camera" size={30} color={colors.grey} />
+              </TouchableOpacity>
+            </View>
           </View>
+
+          <TextInput
+            style={styles.input}
+            placeholder={email}
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+            autoCapitalize="none"
+            setIsInfosModified={setIsInfosModified}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder={username}
+            onChangeText={(text) => setUsername(text)}
+            value={username}
+            autoCapitalize="none"
+            setIsInfosModified={setIsInfosModified}
+          />
+          <TextInput
+            style={styles.inputText}
+            placeholder={description}
+            onChangeText={(text) => setDescription(text)}
+            value={description}
+            autoCapitalize="none"
+            setIsInfosModified={setIsInfosModified}
+          />
+          <Text style={{ color: "red", marginTop: 5 }}>{message}</Text>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={handleUpdateInformations}
+          >
+            <Text>Update</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => {
+              setToken(null);
+              setId(null);
+            }}
+          >
+            <Text>Log Out</Text>
+          </TouchableOpacity>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -210,16 +281,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bgColor,
   },
-  mainContainer: {
-    flex: 1,
-    marginVertical: 25,
+  scrollView: {
+    alignItems: "center",
+    backgroundColor: colors.bgColor,
+  },
+  picture: {
+    height: 150,
+    width: 150,
+    borderRadius: 150,
+  },
+  pictureView: {
+    marginVertical: 20,
+    width: 170,
+    height: 170,
+    borderRadius: 170,
     alignItems: "center",
     justifyContent: "center",
+    borderColor: colors.lightPink,
+    borderWidth: 2,
   },
-
-  logo: {
-    width: 100,
-    height: 100,
+  topView: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  icons: {
+    marginLeft: 20,
+  },
+  iconButton: {
+    marginTop: 40,
+  },
+  view: {
+    height: 30,
   },
   input: {
     borderBottomColor: "#ffbac0",
@@ -227,6 +321,16 @@ const styles = StyleSheet.create({
     height: 40,
     width: 300,
     marginTop: 40,
+  },
+  inputText: {
+    borderColor: colors.lightPink,
+    borderWidth: 2,
+    width: "80%",
+    marginBottom: 30,
+    marginTop: 15,
+    fontSize: 16,
+    height: 100,
+    padding: 10,
   },
   btn: {
     borderColor: "#ffbac0",
