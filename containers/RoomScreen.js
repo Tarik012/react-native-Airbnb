@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
 import { AntDesign } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { getStars } from "./utils/Functions";
+import { getStars } from "../utils/Functions";
 
 //const screenWidth = Dimensions.get("window").width;
 //const screenHeight = Dimensions.get("window").height;

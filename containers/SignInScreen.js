@@ -1,25 +1,36 @@
 import { useNavigation } from "@react-navigation/core";
 import {
-  Button,
   Text,
   TextInput,
   View,
-  Image,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
   ScrollView,
+  SafeAreaView,
+  StatusBar,
+  Dimensions,
 } from "react-native";
+import Constants from "expo-constants";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
+
+import colors from "../assets/colors";
+
 import { useState } from "react";
 
-export default function SignInScreen({ setToken }) {
+import Logo from "../components/Logo";
+
+// Dimensions
+const windowHeight = Dimensions.get("window").height;
+const statusBarHeight = Constants.statusBarHeight;
+const scrollViewHeight = windowHeight - statusBarHeight;
+
+export default function SignInScreen({ setToken, setId }) {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSignIn = async () => {
     setError("");
@@ -28,8 +39,6 @@ export default function SignInScreen({ setToken }) {
       setError("Veuillez renseigner tous les champs.");
       return;
     }
-
-    setIsLoading(true);
 
     try {
       const res = await axios.post(
@@ -40,72 +49,95 @@ export default function SignInScreen({ setToken }) {
         }
       );
       //console.log(res.data);
-      if (res.data.token) {
-        setToken(res.data.token, res.data.id);
-        //console.log("token==>", res.data.token);
-        //alert("Connexion réussie");
-        setIsLoading(false);
+      if (res.data.token && res.data.id) {
+        const token = res.data.token;
+        const id = res.data.id;
+        setToken(token);
+        setId(id);
+      } else {
+        setError("Une erreur est sur");
       }
     } catch (error) {
       console.log(error.response.data.error);
     }
   };
 
-  return isLoading ? (
-    <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
-  ) : (
-    <ScrollView>
-      <View style={styles.mainContainer}>
-        <KeyboardAwareScrollView>
-          <Image source={require("../assets/logo.png")} style={styles.logo} />
-          <TextInput
-            style={styles.input}
-            placeholder="Your Email"
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Your Password"
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            autoCapitalize="none"
-            secureTextEntry
-          />
-          <Text style={{ color: "red", marginTop: 5 }}>{error}</Text>
-          <TouchableOpacity style={styles.btn} onPress={handleSignIn}>
-            <Text>Sign in</Text>
-          </TouchableOpacity>
-          <Text
-            onPress={() => {
-              navigation.navigate("SignUp");
-            }}
-          >
-            No account ? Register
-          </Text>
-        </KeyboardAwareScrollView>
-      </View>
-    </ScrollView>
+  return (
+    <SafeAreaView style={styles.safeAreaView}>
+      <StatusBar
+        barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+      />
+      <KeyboardAwareScrollView>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View style={styles.view}>
+            <Logo size={"large"} />
+            <Text style={styles.text}>Sign in</Text>
+          </View>
+          <View style={styles.view}>
+            <TextInput
+              style={styles.input}
+              placeholder="Your Email"
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Your Password"
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              autoCapitalize="none"
+              secureTextEntry
+            />
+          </View>
+          <View style={styles.view}>
+            <Text style={{ color: "red", marginTop: 5 }}>{error}</Text>
+            <TouchableOpacity style={styles.btn} onPress={handleSignIn}>
+              <Text>Sign in</Text>
+            </TouchableOpacity>
+            <Text
+              onPress={() => {
+                navigation.navigate("SignUp");
+              }}
+            >
+              No account ? Register
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    marginVertical: 25,
-    alignItems: "center",
+  safeAreaView: {
+    backgroundColor: colors.bgColor,
   },
-
-  logo: {
-    width: 100,
-    height: 100,
+  scrollView: {
+    flex: 1,
+    backgroundColor: colors.bgColor,
+    alignItems: "center",
+    justifyContent: "space-around",
+    height: scrollViewHeight,
+  },
+  view: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    color: colors.grey,
+    fontWeight: "600",
+    fontSize: 24,
+    marginBottom: 30,
   },
   input: {
-    borderBottomColor: "#ffbac0",
-    borderBottomWidth: 2,
     height: 40,
-    width: 300,
-    marginTop: 40,
+    borderBottomColor: colors.lightPink,
+    borderBottomWidth: 2,
+    width: "80%",
+    marginBottom: 30,
+    fontSize: 16,
   },
   btn: {
     borderColor: "#ffbac0",

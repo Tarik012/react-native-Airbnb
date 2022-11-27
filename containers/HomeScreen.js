@@ -9,10 +9,14 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   ImageBackground,
+  SafeAreaView,
+  StatusBar,
+  r,
 } from "react-native";
 import { Dimensions } from "react-native";
 import axios from "axios";
-import { getStars } from "./utils/Functions";
+import { getStars } from "../utils/Functions";
+import colors from "../assets/colors";
 
 const screenWidth = Dimensions.get("window").width;
 //const screenHeight = Dimensions.get("window").height;
@@ -38,63 +42,79 @@ export default function HomeScreen() {
     fetchPictures();
   }, []);
 
-  return isLoading ? (
-    <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
-  ) : (
-    <View style={{ marginLeft: 20, marginRight: 20 }}>
-      <FlatList
-        data={data}
-        keyExtractor={(item) => String(item._id)}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Room", { roomId: item._id });
-            }}
-          >
-            <View style={styles.container} key={item._id}>
-              <View style={styles.pictureContainer}>
-                <ImageBackground
-                  style={styles.bgImg}
-                  source={{ uri: item.photos[0].url }}
-                >
-                  <View style={styles.priceView}>
-                    <Text style={styles.priceText}>{item.price} €</Text>
+  return (
+    <SafeAreaView style={styles.safeAreaView}>
+      <StatusBar barStyle="dark-content" />
+      {isLoading ? (
+        <ActivityIndicator
+          size="large"
+          color="purple"
+          style={{ marginTop: 100 }}
+        />
+      ) : (
+        <View style={{ marginLeft: 20, marginRight: 20 }}>
+          <FlatList
+            data={data}
+            keyExtractor={(item) => String(item._id)}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Room", { roomId: item._id });
+                }}
+              >
+                <View style={styles.container} key={item._id}>
+                  <View style={styles.pictureContainer}>
+                    <ImageBackground
+                      style={styles.bgImg}
+                      source={{ uri: item.photos[0].url }}
+                    >
+                      <View style={styles.priceView}>
+                        <Text style={styles.priceText}>{item.price} €</Text>
+                      </View>
+                    </ImageBackground>
                   </View>
-                </ImageBackground>
-              </View>
-              <View style={styles.detailsContainer}>
-                <View style={styles.leftDetails}>
-                  <Text
-                    style={styles.title}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {item.title}
-                  </Text>
-                  <View style={styles.stars}>
-                    <Text> {getStars(item.ratingValue)}</Text>
-                    <Text style={styles.review}> {item.reviews} reviews</Text>
+                  <View style={styles.detailsContainer}>
+                    <View style={styles.leftDetails}>
+                      <Text
+                        style={styles.title}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {item.title}
+                      </Text>
+                      <View style={styles.stars}>
+                        <Text> {getStars(item.ratingValue)}</Text>
+                        <Text style={styles.review}>
+                          {" "}
+                          {item.reviews} reviews
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.rightDetails}>
+                      <Image
+                        source={{
+                          uri: `${item.user.account.photo.url}`,
+                        }}
+                        style={styles.photo}
+                        resizeMode="contain"
+                      />
+                    </View>
                   </View>
                 </View>
-                <View style={styles.rightDetails}>
-                  <Image
-                    source={{
-                      uri: `${item.user.account.photo.url}`,
-                    }}
-                    style={styles.photo}
-                    resizeMode="contain"
-                  />
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeAreaView: {
+    flex: 1,
+    backgroundColor: colors.bgColor,
+  },
   container: {
     borderBottomWidth: 0.5,
     borderBottomColor: "grey",

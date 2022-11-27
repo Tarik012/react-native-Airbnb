@@ -1,5 +1,7 @@
 import {
-  Button,
+  Platform,
+  SafeAreaView,
+  StatusBar,
   Text,
   TextInput,
   View,
@@ -7,12 +9,13 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Logo from "../components/Logo";
+import colors from "../assets/colors";
 
 export default function SignUpScreen({ setToken, setId }) {
   const navigation = useNavigation();
@@ -21,11 +24,10 @@ export default function SignUpScreen({ setToken, setId }) {
   const [description, setDescription] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSignUp = async () => {
-    setError("");
+    setError(null);
 
     if (!email || !username || !description || !password) {
       setError("Veuillez renseigner tous les champs.");
@@ -36,8 +38,6 @@ export default function SignUpScreen({ setToken, setId }) {
       setError("les mots de passe doivent être identiques !");
       return;
     }
-
-    setIsLoading(true);
 
     try {
       //console.log("coucou =>", email, description, username, password);
@@ -50,17 +50,13 @@ export default function SignUpScreen({ setToken, setId }) {
           description,
         }
       );
-      //console.log("ici =>", res.data);
-      if (res.data.token) {
-        setToken(res.data.token, res.data.id);
-        setId(res.data.Id);
-        //console.log("token==>", res.data.token);
-        //alert("Connexion réussie");
-        setIsLoading(false);
-
-        await AsyncStorage.setItem("userToken", res.data.token);
-        await AsyncStorage.setId("userId", res.data.id);
-        navigation.navigate("Home");
+      if (res.data.token && res.data.id) {
+        const token = res.data.token;
+        const id = res.data.id;
+        setToken(token);
+        setId(id);
+      } else {
+        setError("Une erreur est survenue");
       }
     } catch (error) {
       console.log(error.response.status);
@@ -75,13 +71,15 @@ export default function SignUpScreen({ setToken, setId }) {
     }
   };
 
-  return isLoading ? (
-    <ActivityIndicator size="large" color="purple" style={{ marginTop: 100 }} />
-  ) : (
-    <ScrollView>
-      <View style={styles.mainContainer}>
-        <KeyboardAwareScrollView>
-          <Image source={require("../assets/logo.png")} style={styles.logo} />
+  return (
+    <SafeAreaView style={styles.safeAreaView}>
+      <StatusBar
+        barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+      />
+      <KeyboardAwareScrollView style={styles.keyboard}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <Logo size={"large"} />
+          <Text>Sign Up</Text>
           <TextInput
             style={styles.input}
             placeholder="Your Email"
@@ -89,6 +87,7 @@ export default function SignUpScreen({ setToken, setId }) {
             value={email}
             autoCapitalize="none"
           />
+
           <TextInput
             style={styles.input}
             placeholder="Your Username"
@@ -96,6 +95,7 @@ export default function SignUpScreen({ setToken, setId }) {
             value={username}
             autoCapitalize="none"
           />
+
           <TextInput
             style={styles.input}
             placeholder="Your Password"
@@ -104,6 +104,7 @@ export default function SignUpScreen({ setToken, setId }) {
             autoCapitalize="none"
             secureTextEntry
           />
+
           <TextInput
             style={styles.input}
             placeholder="Confirm Your password"
@@ -112,15 +113,24 @@ export default function SignUpScreen({ setToken, setId }) {
             autoCapitalize="none"
             secureTextEntry
           />
+
           <TextInput
-            style={styles.input}
+            style={styles.inputText}
             placeholder="Your description"
+            multiline="true"
+            maxLength={250}
+            numberOfLines={10}
             onChangeText={(text) => setDescription(text)}
             value={description}
             autoCapitalize="none"
           />
+
           <Text style={{ color: "red", marginTop: 5 }}>{error}</Text>
-          <TouchableOpacity style={styles.btn} onPress={handleSignUp}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.btn}
+            onPress={handleSignUp}
+          >
             <Text>Sign up</Text>
           </TouchableOpacity>
           <Text
@@ -130,28 +140,48 @@ export default function SignUpScreen({ setToken, setId }) {
           >
             Already have an account ? Sign in
           </Text>
-        </KeyboardAwareScrollView>
-      </View>
-    </ScrollView>
+        </ScrollView>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    marginVertical: 25,
-    alignItems: "center",
+  safeAreaView: {
+    flex: 1,
+    backgroundColor: colors.bgColor,
   },
-
-  logo: {
-    width: 100,
-    height: 100,
+  scrollView: {
+    backgroundColor: colors.bgColor,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  keyboard: {
+    color: colors.bgColor,
+  },
+  view: {
+    marginTop: 30,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   input: {
-    borderBottomColor: "#ffbac0",
-    borderBottomWidth: 2,
     height: 40,
-    width: 300,
-    marginTop: 40,
+    borderBottomColor: colors.lightPink,
+    borderBottomWidth: 2,
+    width: "80%",
+    marginBottom: 30,
+    fontSize: 16,
+  },
+  inputText: {
+    borderColor: colors.lightPink,
+    borderWidth: 2,
+    width: "80%",
+    marginBottom: 30,
+    marginTop: 15,
+    fontSize: 16,
+    height: 100,
+    padding: 10,
   },
   btn: {
     borderColor: "#ffbac0",
