@@ -42,7 +42,7 @@ export default function SignUpScreen({ setToken, setId }) {
     try {
       //console.log("coucou =>", email, description, username, password);
       const res = await axios.post(
-        "https://express-airbnb-api.herokuapp.com/user/sign_up",
+        "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/sign_up",
         {
           email,
           password,
