@@ -37,7 +37,7 @@ export default function AroundMeScreen({ setToken }) {
   const getPositions = async (latitude, longitude) => {
     try {
       const res = await axios.get(
-        `https://express-airbnb-api.herokuapp.com/rooms/around/?latitude=${latitude}&longitude=${longitude}`
+        `https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/rooms/around/?latitude=${latitude}&longitude=${longitude}`
       );
       //console.log("rs.data=>", res.data);
       setPositions(res.data);
